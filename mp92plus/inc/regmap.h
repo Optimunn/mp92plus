@@ -33,6 +33,7 @@
 #define DLPF_5 (uint8_t)0x06
 //---------------------------------------------
 #define XG_OFFSET_H (uint8_t)0x13
+#define XA_OFFSET_H (uint8_t)0x77
 #define SMPDIV (uint8_t)0x19
 #define INT_PIN_CFG (uint8_t)0x37
 #define OPEN_DRAIN (uint8_t)0x40

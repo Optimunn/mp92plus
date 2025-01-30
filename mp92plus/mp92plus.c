@@ -158,12 +158,12 @@ static inline __attribute__((always_inline)) error_t mpu_init_default(mpu9250_t 
     config->factors[0] = 16.0f / 32767.5f;
 
     // setting the gyro range to 2000DPS as default
-    mpu_write_reg(config, GYRO_CONFIG, GYRO_FS_SEL_2000DPS);
+    mpu_write_reg(config, GYRO_CONFIG, GYRO_FS_SEL_2000DPS & ~0x03);
     config->factors[1] = 2000.0f / 32767.5f;
 
     // setting bandwidth to 184Hz as default
     mpu_write_reg(config, CONFIG, DLPF_184);
-    mpu_write_reg(config, ACCEL_CONFIG2, DLPF_184 | 0x08);
+    mpu_write_reg(config, ACCEL_CONFIG2, DLPF_184 & ~0x08);
 
 #if MP92_USE_COMPASS
     mpu_write_reg(config, SMPDIV, 0x00);
@@ -244,7 +244,7 @@ error_t mpu9250_setup(mpu9250_t *config, mpu_settings_t *settings, int16_t gyro_
     mpu_write_reg(config, GYRO_CONFIG, settings->gyro_range & ~0x03);
 
     mpu_write_reg(config, CONFIG, settings->dlpf_filter);
-    mpu_write_reg(config, ACCEL_CONFIG2, settings->dlpf_filter | 0x08);
+    mpu_write_reg(config, ACCEL_CONFIG2, settings->dlpf_filter & ~0x08);
 
 #if MP92_USE_COMPASS
     mpu_write_reg(config, SMPDIV, 0x00);
