@@ -30,6 +30,7 @@ Functions `mpu9250_attach_interrupt()` and `mpu9250_terminate_interrupt()` are r
 It is also important to note that after an interrupt is triggered, in order for the next interrupt to work, you must call function `mpu9250_continue_interrupt()`, which will allow the next interrupt.
 
 Also, to check the status of the device, there is a function `mpu9250_status()`
+
 **You can learn more about these functions from the library header file.**
 ### Also see the examples
 * `mpu6500_i2c_interrupt`
