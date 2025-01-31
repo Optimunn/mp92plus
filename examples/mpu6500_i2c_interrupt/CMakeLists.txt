@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.19)
 
 include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
 
-add_subdirectory(../../mp92plus)
+add_subdirectory(../../mp92plus build)
 
 #get_filename_component(BASE_FOLDER ${CMAKE_CURRENT_SOURCE_DIR} NAME)
 #set(PROJECT_NAME ${BASE_FOLDER})
