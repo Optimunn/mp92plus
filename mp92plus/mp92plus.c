@@ -47,7 +47,7 @@ static void mpu_write_reg(mpu9250_t *config, uint8_t addr, uint8_t reg)
 #else
     i2c_write_blocking(config->inst, config->addr, buf, 2, false);
 #endif
-    sleep_us(550);
+    busy_wait_us(550);
 }
 
 static void mpu_read_reg(mpu9250_t *config, uint8_t addr, uint8_t *buf, uint8_t len)
@@ -59,7 +59,7 @@ static void mpu_read_reg(mpu9250_t *config, uint8_t addr, uint8_t *buf, uint8_t 
     spi_read_blocking(config->inst, 0, buf, len);
     cs_deselect(config->cs);
 #else
-    i2c_write_blocking(config->inst, config->addr, &addr, 1, true); // true to keep master control of bus
+    i2c_write_blocking(config->inst, config->addr, &addr, 1, true);
     i2c_read_blocking(config->inst, config->addr, buf, len, false);
 #endif
 }
@@ -78,7 +78,7 @@ static void mag_enable_reg(mpu9250_t *config, uint8_t addr, uint8_t len)
     mpu_write_reg(config, I2C_SLV0_ADDR, AK8963_I2C_ADDR | I2C_READ_FLAG);
     mpu_write_reg(config, I2C_SLV0_REG, addr);
     mpu_write_reg(config, I2C_SLV0_CTRL, I2C_SLV0_EN | len);
-    sleep_ms(1);
+    busy_wait_ms(1);
 }
 
 static void mag_read_reg(mpu9250_t *config, uint8_t addr, uint8_t *buf, uint8_t len)
@@ -143,7 +143,7 @@ static inline __attribute__((always_inline)) error_t mpu_init_default(mpu9250_t 
     mpu_write_reg(config, PWR_MGMNT_1, CLOCK_SEL_PLL);
 
     mpu_write_reg(config, PWR_MGMNT_1, PWR_RESET);
-    sleep_ms(1);
+    busy_wait_ms(1);
 
     mpu_write_reg(config, PWR_MGMNT_1, CLOCK_SEL_PLL);
 
@@ -174,7 +174,7 @@ static inline __attribute__((always_inline)) error_t mpu_init_default(mpu9250_t 
     mag_write_reg(config, AK8963_CNTL1, AK8963_PWR_DOWN);
 
     mag_write_reg(config, AK8963_CNTL2, AK8963_RESET);
-    sleep_ms(1);
+    busy_wait_ms(1);
 
     if (ak8963_status(config))
         return 2;
@@ -207,7 +207,7 @@ error_t mpu9250_setup(mpu9250_t *config, mpu_settings_t *settings, int16_t gyro_
 
     for (int item = 0; item < 3; item++) {
         gyro_bytes[2 * item] = (0 - gyro_zero[item] >> 8) & 0xFF;
-        gyro_bytes[2 * item + 1] = 0 - gyro_zero[item] & 0xFF;    
+        gyro_bytes[2 * item + 1] = 0 - gyro_zero[item] & 0xFF;
     }
 
     for(uint8_t item = 0; item < 6; item++)
@@ -380,6 +380,15 @@ void mpu9250_read_motion(mpu9250_t *config, float accel[3], float gyro[3])
 
     for (uint8_t item = 0; item < 3; item++)
         gyro[item] = (float)gyro_raw[item] * config->factors[1];
+}
+
+void mpu9250_read_raw_temperature(mpu9250_t *config, int16_t *temp)
+{
+    uint8_t buffer[2];
+
+    mpu_read_reg(config, TEMP_OUT, buffer, sizeof(buffer));
+
+    *temp = buffer[0] << 8 | buffer[1];
 }
 
 void mpu9250_read_temperature(mpu9250_t *config, float *temp)
