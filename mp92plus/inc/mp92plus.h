@@ -258,6 +258,7 @@ extern "C"
 #endif
     /** Read raw motion sensor data from the MPU-9250 sensor.*/
     void mpu9250_read_raw_motion(mpu9250_t *config, int16_t accel[3], int16_t gyro[3]);
+    void mpu9250_read_raw_temperature(mpu9250_t *config, int16_t *temp);
 
 // --------------------- Internal function  ---------------------
 #if MP92_USE_SPI
