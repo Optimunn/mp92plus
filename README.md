@@ -13,13 +13,14 @@ This definition is responsible for using the SPI interface. If `true`, then SPI 
 Next, you need to use `mpu9250_reset()` to initialize the device.
 The initial setup is completed and the sensor is ready to collect data.
 To get the processed data, there are three functions to get the appropriate measurements:
-* `mpu9250_read_motion();`
-* `mpu9250_read_magnetometer();`
+* `mpu9250_read_motion()`
+* `mpu9250_read_magnetometer()`
 * `mpu9250_read_temperature()`
 
 There are also functions for raw measurements.
 * `mpu9250_read_raw_motion()`
 * `mpu9250_read_raw_mag()`
+* `mpu9250_read_raw_temperature()`
 - - -
 The main functions for sensor operation have been described above. Next, we will consider functions for more specific tasks.
 
