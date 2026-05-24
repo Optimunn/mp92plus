@@ -179,11 +179,11 @@ extern "C"
      *
      * @param config The configuration struct for the MPU9250 sensor.
      * @param interrupt_pin The GPIO pin of the interrupt pin.
-     * @param callback The callback function.
+     * @param handler The callback function.
      *
      * @note Function execution time ≈ 2 ms
      */
-    void mpu9250_attach_interrupt(mpu9250_t *config, uint interrupt_pin, gpio_irq_callback_t callback);
+    void mpu9250_attach_interrupt(mpu9250_t *config, uint interrupt_pin, irq_handler_t handler);
 
     /**
      * @brief Disables and deinitializes the interrupt for the MPU9250 sensor.
@@ -192,10 +192,11 @@ extern "C"
      * the GPIO pin associated with the interrupt.
      *
      * @param config The configuration struct for the MPU9250 sensor.
+     * @param handler The callback function.
      *
      * @return 0 if successful, 1 if the interrupt is already not connected.
      */
-    error_t mpu9250_terminate_interrupt(mpu9250_t *config);
+    error_t mpu9250_terminate_interrupt(mpu9250_t *config, irq_handler_t handler);
 
     /**
      * @brief Checks and returns the interrupt status of the MPU9250 sensor,

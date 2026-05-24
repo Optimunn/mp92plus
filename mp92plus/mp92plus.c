@@ -87,7 +87,7 @@ static void mag_read_reg(mpu9250_t *config, uint8_t addr, uint8_t *buf, uint8_t 
     mpu_read_reg(config, EXT_SENS_DATA_00, buf, len);
 }
 
-static inline __attribute__ ((always_inline)) void mag_get_asa_values(mpu9250_t *config)
+static inline __attribute__((always_inline)) void mag_get_asa_values(mpu9250_t *config)
 {
     uint8_t buf[3];
     mag_read_reg(config, AK8963_ASAX, buf, sizeof(buf));
@@ -205,12 +205,13 @@ error_t mpu9250_setup(mpu9250_t *config, mpu_settings_t *settings, int16_t gyro_
 {
     uint8_t gyro_bytes[6];
 
-    for (int item = 0; item < 3; item++) {
+    for (int item = 0; item < 3; item++)
+    {
         gyro_bytes[2 * item] = (0 - gyro_zero[item] >> 8) & 0xFF;
         gyro_bytes[2 * item + 1] = 0 - gyro_zero[item] & 0xFF;
     }
 
-    for(uint8_t item = 0; item < 6; item++)
+    for (uint8_t item = 0; item < 6; item++)
         mpu_write_reg(config, XG_OFFSET_H + item, gyro_bytes[item]);
 
     switch (settings->accel_range)
@@ -270,7 +271,7 @@ error_t mpu9250_setup(mpu9250_t *config, mpu_settings_t *settings, int16_t gyro_
     return 0;
 }
 
-void mpu9250_attach_interrupt(mpu9250_t *config, uint interrupt_pin, gpio_irq_callback_t callback)
+void mpu9250_attach_interrupt(mpu9250_t *config, uint interrupt_pin, irq_handler_t handler)
 {
     gpio_init(interrupt_pin);
     gpio_set_dir(interrupt_pin, GPIO_IN);
@@ -278,21 +279,10 @@ void mpu9250_attach_interrupt(mpu9250_t *config, uint interrupt_pin, gpio_irq_ca
     config->interrupt |= interrupt_pin;
     config->interrupt &= ~0x80;
 
+    gpio_set_irq_enabled(interrupt_pin, GPIO_IRQ_EDGE_RISE, true);
+    gpio_add_raw_irq_handler(interrupt_pin, handler);
     if (!irq_is_enabled(IO_IRQ_BANK0))
-    {
-        gpio_set_irq_enabled_with_callback(
-            interrupt_pin,
-            GPIO_IRQ_EDGE_RISE,
-            true,
-            callback);
-    }
-    else
-    {
-        gpio_set_irq_enabled(
-            interrupt_pin,
-            GPIO_IRQ_EDGE_RISE,
-            true);
-    }
+        irq_set_enabled(IO_IRQ_BANK0, true);
 
     uint8_t buffer;
     mpu_read_reg(config, I2C_MST_CTRL, &buffer, 1);
@@ -302,17 +292,15 @@ void mpu9250_attach_interrupt(mpu9250_t *config, uint interrupt_pin, gpio_irq_ca
     mpu_write_reg(config, INT_ENABLE, INT_RAW_RDY_EN);
 }
 
-error_t mpu9250_terminate_interrupt(mpu9250_t *config)
+error_t mpu9250_terminate_interrupt(mpu9250_t *config, irq_handler_t handler)
 {
     if (config->interrupt & 0x80)
         return 1;
 
     mpu_write_reg(config, INT_ENABLE, INT_DISABLE);
 
-    gpio_set_irq_enabled(
-        config->interrupt & 0x3F,
-        GPIO_IRQ_EDGE_RISE,
-        false);
+    gpio_set_irq_enabled(config->interrupt & 0x3F, GPIO_IRQ_EDGE_RISE, false);
+    gpio_remove_raw_irq_handler(config->interrupt & 0x3F, handler);
     gpio_deinit(config->interrupt & 0x3F);
 
     config->interrupt |= 0x80;

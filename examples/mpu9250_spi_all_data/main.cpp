@@ -1,16 +1,16 @@
 /*
-* Example for the mp92plus library (MPU9250)
-* 
-* This example shows how to get acceleration,
-* gyroscope, and compass data from the MPU9250.
-*
-* The sensor uses the spi interface in this example.
-*
-* Don't forget to set 
-* #define MP92_USE_COMPASS true 
-* #define MP92_USE_SPI true
-* in file mp92plus.h
-*/
+ * Example for the mp92plus library (MPU9250)
+ *
+ * This example shows how to get acceleration,
+ * gyroscope, and compass data from the MPU9250.
+ *
+ * The sensor uses the spi interface in this example.
+ *
+ * Don't forget to set
+ * #define MP92_USE_COMPASS true
+ * #define MP92_USE_SPI true
+ * in file mp92plus.h
+ */
 
 #include <stdio.h>
 #include "pico/stdlib.h"
@@ -30,9 +30,9 @@ int main()
         .cs = 13,
     };
     uint8_t activate = mpu9250_reset(&mpu92, &my_spi, spi1, 1000 * 1000);
-    if(activate)
+    if (activate)
         printf("Failed to initialize MPU9250!\n");
-    
+
     mpu_settings_t set = {
         .accel_range = ACCEL_RANGE_16G,
         .gyro_range = GYRO_RANGE_2000DPS,
@@ -40,7 +40,7 @@ int main()
         .sample_rate_divider = 249};
     int16_t correct_gyro[] = {0, 0, 0};
     uint8_t settings = mpu9250_setup(&mpu92, &set, correct_gyro);
-    if(settings)
+    if (settings)
         printf("Failed to setup MPU9250!\n");
 
     float accel[3], gyro[3], magnet[3], temp;
@@ -55,5 +55,5 @@ int main()
         printf("Magnetometer in uT    X = %10.4f,  Y = %10.4f,  Z = %10.4f\n", magnet[0], magnet[1], magnet[2]);
         printf("Temperature in C      %10.4f\n\n", temp);
         sleep_ms(2000);
-    } 
+    }
 }
