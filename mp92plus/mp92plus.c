@@ -311,6 +311,8 @@ uint8_t mpu9250_continue_interrupt(mpu9250_t *config)
 {
     uint8_t buffer;
     mpu_read_reg(config, INT_STATUS, &buffer, 1);
+    uint32_t events = gpio_get_irq_event_mask(config->interrupt & 0x3F);
+    gpio_acknowledge_irq(config->interrupt & 0x3F, events);
     return buffer;
 }
 
